@@ -1,0 +1,10 @@
+{
+    "name":         "webd/noorm",
+    "description":  "No ORM storage of PHP object",
+    "autoload": {
+        "psr-4": {"": "src/"}
+    },
+    "require": {
+
+    }
+}
