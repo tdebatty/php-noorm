@@ -39,16 +39,6 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(2, Client::All()->Count());
   }
 
-  /**
-   * @covers noorm\Persistent::One
-   * @todo   Implement testOne().
-   */
-  public function testOne() {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-        'This test has not been implemented yet.'
-    );
-  }
 
   /**
    * @covers noorm\Persistent::Factory
@@ -62,61 +52,6 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
     $c = Client::All()->First();
     
     $this->assertEquals($name, $c->name);
-  }
-
-  /**
-   * @covers noorm\Persistent::SetDirectory
-   * @todo   Implement testSetDirectory().
-   */
-  public function testSetDirectory() {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-        'This test has not been implemented yet.'
-    );
-  }
-
-  /**
-   * @covers noorm\Persistent::GetDirectory
-   * @todo   Implement testGetDirectory().
-   */
-  public function testGetDirectory() {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-        'This test has not been implemented yet.'
-    );
-  }
-
-  /**
-   * @covers noorm\Persistent::__sleep
-   * @todo   Implement test__sleep().
-   */
-  public function test__sleep() {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-        'This test has not been implemented yet.'
-    );
-  }
-
-  /**
-   * @covers noorm\Persistent::__wakeup
-   * @todo   Implement test__wakeup().
-   */
-  public function test__wakeup() {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-        'This test has not been implemented yet.'
-    );
-  }
-
-  /**
-   * @covers noorm\Persistent::Id
-   * @todo   Implement testId().
-   */
-  public function testId() {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-        'This test has not been implemented yet.'
-    );
   }
 
   /**
