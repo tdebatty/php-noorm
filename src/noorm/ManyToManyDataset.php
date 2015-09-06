@@ -22,12 +22,15 @@ class ManyToManyDataset extends Dataset
         str_replace('\\', '_', trim(get_class($this->parent), '\\')) . '_' . 
         $other->Id();
   }
-      
+  
   public function __construct($other_collection, Persistent $parent) {
-    $this->collection = $other_collection;
+    parent::__construct($other_collection);
     $this->parent = $parent;
   }
   
+  /**
+   * 
+   */
   public function Load() {
     // Read existing relations
     $file = $this->direct_file();
@@ -43,7 +46,7 @@ class ManyToManyDataset extends Dataset
   
   /**
    * Add a relation to an object from other collection
-   * The reverse link is diretly saved
+   * 
    * 
    * @param Persistent $other
    */

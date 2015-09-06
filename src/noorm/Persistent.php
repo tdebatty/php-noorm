@@ -1,5 +1,7 @@
 <?php namespace noorm;
 
+use \zpt\anno\Annotations;
+
 abstract class Persistent
 {
     
@@ -7,10 +9,12 @@ abstract class Persistent
     
     /**
      * Returns a Dataset representing all saved objects of this class
-     * @return \dframework\Dataset
+     * @return Dataset
      */
     public static function All() {
-        return new Dataset(\get_called_class());
+        $data = new Dataset(\get_called_class());
+        $data->Load();
+        return $data;
     }
     
     /**
@@ -24,7 +28,8 @@ abstract class Persistent
     }
     
     /**
-     * 
+     * Create and return an object.
+     * ! your class should implement an empty constructor !
      * @return Persistent
      */
     public static function Factory() {
@@ -42,7 +47,7 @@ abstract class Persistent
     }
     
     /**
-     * 
+     * Set directory where all persistent objects and relations will be saved.
      * @param String $dir
      * @throws \InvalidArgumentException
      */
@@ -56,12 +61,12 @@ abstract class Persistent
         self::$DIR = realpath($dir);
     }
     
+    /**
+     * Return the path where persistent objects are saved
+     * @return String
+     */
     public static function GetDirectory() {
         return self::$DIR;
-    }
-    
-    public static function Clean() {
-        exec("rm -Rf " . self::GetDirectory());
     }
     
     protected $id = 0;
@@ -71,51 +76,63 @@ abstract class Persistent
       // Will only work on 64 bit systems...
       $this->id = $sec * 1000000 + (int) ($usec * 1000000);
       
-      // Init all empty M2MRelations
-      // using annotations
-      $reflectionClass = new ReflectionClass(get_called_class());
+      // Init all empty ManyToManyDatasets using annotations
+      $reflectionClass = new \ReflectionClass(get_called_class());
       foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-        /* @var $reflectionProperty ReflectionProperty */
         
+        /* @var $reflectionProperty ReflectionProperty */
         $annotations = new Annotations($reflectionProperty);
         if (isset($annotations['var'])
-            && $annotations['var'] === "M2MDataset") {
+            && $annotations['var'] === "ManyToManyMDataset") {
           
           //$property = $reflectionProperty->getName();
           $target = $annotations['target'];
-          $reflectionProperty->setValue($this, new M2MDataset($target, $this));
+          $reflectionProperty->setValue($this, new ManyToManyMDataset($target, $this));
         }
       }
     }
     
     public function __sleep() {
-      // Remove M2MDataset
-      // using annotations
-      $r = array();
-      foreach (get_object_vars($this) as $key => $value) {
-        if (is_a($value, "M2MDataset")) {
+      // Remove ManyToManyMDataset using annotations
+      
+      
+      $attributes = array();
+      $reflectionClass = new \ReflectionClass(get_called_class());
+      foreach ($reflectionClass->getProperties() as $reflectionProperty) {
+        /* @var $reflectionProperty \ReflectionProperty */
+        
+        // don't save static properties
+        if ($reflectionProperty->isStatic()) {
           continue;
         }
         
-        $r[] = $key;
+        // don't save ManyToMany relations
+        $annotations = new Annotations($reflectionProperty);
+        if (isset($annotations['var'])
+            && $annotations['var'] === "ManyToManyDataset") {
+          continue;
+        }
+        
+        $attributes[] = $reflectionProperty->getName();
+            
       }
-      return $r;
+      
+      return $attributes;
     }
     
     public function __wakeup() {
-      // Init and load M2MDatasets
-      // using annotations
-      $reflectionClass = new ReflectionClass(get_called_class());
+      // Init and load ManyToManyDatasets using annotations
+      $reflectionClass = new \ReflectionClass(get_called_class());
       foreach ($reflectionClass->getProperties() as $reflectionProperty) {
         /* @var $reflectionProperty ReflectionProperty */
         
         $annotations = new Annotations($reflectionProperty);
         if (isset($annotations['var'])
-            && $annotations['var'] === "M2MDataset") {
+            && $annotations['var'] === "ManyToManyDataset") {
           
           //$property = $reflectionProperty->getName();
           $target = $annotations['target'];
-          $dataset = new M2MDataset($target, $this);
+          $dataset = new ManyToManyDataset($target, $this);
           $dataset->Load();
           $reflectionProperty->setValue($this, $dataset);
         }
@@ -130,10 +147,17 @@ abstract class Persistent
         return $this->id;
     }
     
-    public abstract function Validate();
+    /**
+     * Override this method to have a pre-save hook. This method must return true
+     * for the object to be saved. Otherwize Save() will trigger an exception.
+     * @return boolean
+     */
+    public function Validate() {
+      return true;
+    }
     
     /**
-     * Save this object. If it is a new object, an id will be attributed
+     * Save this object.
      * @return boolean true on success
      */
     public function Save() {
