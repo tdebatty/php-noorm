@@ -156,7 +156,8 @@ abstract class Persistent {
 
   public function __wakeup() {
     // Init all empty ManyToManyDatasets using annotations
-    self::analyze_class(get_called_class());
+    $class = get_called_class();
+    self::analyze_class($class);
     foreach (self::$m2m_relations[$class] as $target_class => $property) {
       $this->$property = new ManyToManyRelation($target_class, $this);
     }

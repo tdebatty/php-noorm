@@ -23,7 +23,11 @@ class Dataset {
   function LoadIds($ids) {
     $collection = $this->collection;
     foreach ($ids as $id) {
-      $this->data[] = $collection::One(trim($id));
+      $id = trim($id);
+      if ($id == "") {
+        continue;
+      }
+      $this->data[] = $collection::One($id);
     }
     return $this;
   }
