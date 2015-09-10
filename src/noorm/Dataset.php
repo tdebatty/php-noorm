@@ -4,11 +4,28 @@ namespace noorm;
 
 class Dataset {
 
+  /**
+   *
+   * @var type The class of objects that this dataset contains
+   */
   protected $collection;
   protected $data = array();
 
   public function __construct($collection) {
     $this->collection = $collection;
+  }
+  
+  /**
+   * 
+   * @param type $ids
+   * @return \noorm\Dataset
+   */
+  function LoadIds($ids) {
+    $collection = $this->collection;
+    foreach ($ids as $id) {
+      $this->data[] = $collection::One(trim($id));
+    }
+    return $this;
   }
 
   
@@ -16,21 +33,31 @@ class Dataset {
    * 
    * @return \noorm\Dataset
    */
-  public function Load() {
+  function Load() {
     $folder = Persistent::GetDirectory() . DIRECTORY_SEPARATOR . 
         str_replace('\\', DIRECTORY_SEPARATOR, trim($this->collection, '\\'));
+    
     if (!is_dir($folder)) {
       return;
     }
 
+    $collection = $this->collection;
+    
     foreach (scandir($folder) as $file) {
+      if (!is_file($folder . DIRECTORY_SEPARATOR . $file)) {
+        continue;
+      }
+      
       if ($file == "." || $file == "..") {
         continue;
       }
 
-      $item = unserialize(file_get_contents($folder . DIRECTORY_SEPARATOR . $file));
+      $id = rtrim($file, ".phpd");
+      //$item = unserialize(file_get_contents($folder . DIRECTORY_SEPARATOR . $file));
+      $item = $collection::One($id);
       $this->data[] = $item;
     }
+    
     return $this;
   }
 
@@ -59,7 +86,7 @@ class Dataset {
    * @return \dframework\Dataset
    */
   public function Limit($offset, $length) {
-    $this->data = array_slice($this->data, $offset, $length);
+    $this->data = \array_slice($this->data, $offset, $length);
     return $this;
   }
 
@@ -79,7 +106,7 @@ class Dataset {
     $property = $reflection->getProperty($field);
     $property->setAccessible(true);
 
-    usort($this->data, function($a, $b) use($property, $ascending) {
+    \usort($this->data, function($a, $b) use($property, $ascending) {
       return !$ascending XOR $property->getValue($a) > $property->getValue($b);
     });
 
@@ -96,7 +123,7 @@ class Dataset {
    * @return \noorm\Dataset
    */
   public function Map(\Closure $func) {
-    $this->data = array_map($func, $this->data);
+    $this->data = \array_map($func, $this->data);
     return $this;
   }
 
@@ -117,7 +144,7 @@ class Dataset {
     foreach ($this->data as $v) {
       $r = $func($v);
       if (!is_array($r)) {
-        throw new Exception("Function $func should return an array!");
+        throw new \Exception("Function $func should return an array!");
       }
       $d = array_merge($d, $r);
     }
@@ -137,7 +164,7 @@ class Dataset {
    * @return \noorm\Dataset
    */
   public function Sort(\Closure $func) {
-    usort($this->data, $func);
+    \usort($this->data, $func);
     return $this;
   }
 
@@ -156,11 +183,11 @@ class Dataset {
    * @return Persistent || false 
    */
   public function First() {
-    if (count($this->data) == 0) {
+    if (\count($this->data) == 0) {
       return false;
     }
-    reset($this->data);
-    return current($this->data);
+    \reset($this->data);
+    return \current($this->data);
   }
 
   /**
@@ -168,10 +195,10 @@ class Dataset {
    * @return int
    */
   public function Count() {
-    return count($this->data);
+    return \count($this->data);
   }
 
   public function Reduce(\Closure $func, $initial = null) {
-    return array_reduce($this->data, $func, $initial);
+    return \array_reduce($this->data, $func, $initial);
   }
 }

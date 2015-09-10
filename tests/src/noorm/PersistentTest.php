@@ -25,7 +25,6 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @covers noorm\Persistent::All
-   * @todo   Implement testAll().
    */
   public function testAll() {
     $c = new Client();
@@ -42,7 +41,6 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @covers noorm\Persistent::Factory
-   * @todo   Implement testFactory().
    */
   public function testFactory() {
     $name = "Nobody";
@@ -55,19 +53,16 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
   }
 
   /**
+   * @expectedException \Exception
    * @covers noorm\Persistent::Validate
-   * @todo   Implement testValidate().
    */
   public function testValidate() {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-        'This test has not been implemented yet.'
-    );
+    $nv = new NoValidate();
+    $nv->Save();
   }
 
   /**
    * @covers noorm\Persistent::Save
-   * @todo   Implement testSave().
    */
   public function testSave() {
 
@@ -83,7 +78,6 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @covers noorm\Persistent::Delete
-   * @todo   Implement testDelete().
    */
   public function testDelete() {
 
@@ -127,7 +121,13 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
    * Test if array properties are correctly saved
    */
   public function testArray() {
+    $val = array("a", "b", "c");
+    $client = new Client();
+    $client->SetVal($val);
+    $client->Save();
     
+    $same_client = Client::One($client->Id());
+    $this->assertInternalType("array", $same_client->getVal());
   }
   
   /**
@@ -139,7 +139,6 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @covers noorm\Persistent::Parse
-   * @todo   Implement testParse().
    */
   public function testParse() {
     $name = "Client's name";
@@ -149,39 +148,15 @@ class PersistentTest extends \PHPUnit_Framework_TestCase {
     
     $this->assertEquals($client->name, $name);
   }
-
-}
-
-class Client extends Persistent {
-
-  public $name = "";
-  private $val;
   
-  public function SetName($name) {
-    $this->name = $name;
-    return $this;
+  public function testReferences() {
+    $client = new Client();
+    $client->name = "Yo...";
+    
+    $id = $client->Id();
+    $c2 = Client::One($id);
+    $this->assertEquals($client, $c2);
+        
   }
 
-  public function GetVal() {
-    return $this->val;
-  }
-
-  public function SetVal($val) {
-    $this->val = $val;
-    return $this;
-  }
-}
-
-function tempdir($dir = null, $prefix = 'php') {
-  if ($dir === null) {
-    $dir = sys_get_temp_dir();
-  }
-  $tempfile = tempnam($dir, $prefix);
-  if (file_exists($tempfile)) {
-    unlink($tempfile);
-  }
-  mkdir($tempfile);
-  if (is_dir($tempfile)) {
-    return $tempfile;
-  }
 }
