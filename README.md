@@ -14,7 +14,7 @@ $ composer require webd/noorm
 
 ## Quickstart
 
-First, load composer, and define a directory where your object can be saved (it has to be writable).
+First, load composer, and define a directory where your objects can be saved (it has to be writable).
 ```php
 require_once __DIR__  . "/../vendor/autoload.php";
 use noorm\Persistent;
@@ -23,7 +23,7 @@ use noorm\Persistent;
 Persistent::SetDirectory("/tmp/noorm-example");
 ```
 
-Define the classes that you want to persist. They have to extend the class **\noorm\Persitent**.
+Define the classes that you want to persist. They have to extend the class [**\noorm\Persitent**](./doc/persistent.md).
 ```php
 class Client extends Persistent {
 
@@ -73,7 +73,7 @@ $client->name = "C1";
 $client->Save();
 ```
 
-The static method **All()** returns a **\noorm\Dataset** representing all the saved objects of this class. You can use this dataset to filter, sort or list your objects.
+The static method **All()** returns a [**\noorm\Dataset**](./doc/dataset.md) representing all the saved objects of this class. You can use this dataset to filter, sort or list your objects.
 ```php
 // Show all clients
 /* @var $client Client */
@@ -83,7 +83,7 @@ foreach (Client::All()->Collect() as $client) {
 }
 ```
 
-PHP-Noorm also manages **many-to-many relations** for you. These are described using annotations in your class definition.
+PHP-Noorm also manages [**many-to-many relations**](./doc/many-to-many.md) for you. These are described using annotations in your class definition.
 ```php
 // Create a new item
 $item = new Item();
@@ -96,3 +96,8 @@ $client->items->Add($item);
 ```
 
 ## Known bugs and limitations
+
+These are planned improvements:
+- There can be only one many-to-many relation between two classes;
+- You cannot define a many-to-many relation between a class and itself;
+- All() will eagerly load all objects, which memory consuming.
