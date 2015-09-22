@@ -3,9 +3,9 @@ The persistent class allows to easily save (persist) and load objects.
 
 ## Saving objects
 To save (persist) objects:
-1. Choose a directory where to save your objects using **Persistent::SetDirectory( String $dir )**
-2. Extend the Persistent class
-3. Use the **Save()** method
+- Choose a directory where to save your objects using **Persistent::SetDirectory( String $dir )**
+- Extend the Persistent class
+- Use the **Save()** method
 
 That's it!
 
