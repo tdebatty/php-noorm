@@ -71,12 +71,13 @@ class Dataset {
    * Filter the objects in the dataset.
    * The filter function must return true or false
    * For example, to get the number of houses with more than 3 rooms
+   * <code>
    * House::All()
    *         ->Filter(function($house){return $house->rooms > 3; })
    *         ->Count();
-   * 
+   * </code>
    * @param \Closure $func
-   * @return \dframework\Dataset
+   * @return \noorm\Dataset
    */
   public function Filter(\Closure $func) {
     $this->data = \array_filter($this->data, $func);
@@ -87,7 +88,7 @@ class Dataset {
    * Just like SQL LIMIT
    * @param int $offset
    * @param int $length
-   * @return \dframework\Dataset
+   * @return \noorm\Dataset
    */
   public function Limit($offset, $length) {
     $this->data = \array_slice($this->data, $offset, $length);
@@ -97,13 +98,15 @@ class Dataset {
   /**
    * Sort objects by one of the fields (public, protected or private)
    * Eg to get the 10 best students:
+   * <code>
    * Student::All()
    *     ->SortBy("score", false)
    *     ->Limit(0, 10)
    *     ->Collect();
+   * </code>
    * @param String $field
    * @param boolean $ascending
-   * @return \dframework\Dataset
+   * @return \noorm\Dataset
    */
   public function SortBy($field, $ascending = true) {
     $reflection = new \ReflectionClass($this->collection);
@@ -120,9 +123,11 @@ class Dataset {
   /**
    * Apply a function to all elements in the dataset.
    * E.g.
+   * <code>
    * House::All()
    *     ->Map(function($house){ return $house->rooms; })
    *     ->Collect();
+   * </code>
    * @param \Closure $func
    * @return \noorm\Dataset
    */
@@ -135,10 +140,12 @@ class Dataset {
    * Apply a function to all elements in the dataset. The function must return an
    * array of items, that will all be merged in a single Dataset.
    * E.g.
+   * <code>
    * Measure::All()
    *     ->FlatMap(function($measure){
    *         return new array($measure->value, $measure->value * $measure->value); })
    *     ->Collect();
+   * </code>
    * @param \Closure $func
    * @return \noorm\Dataset
    */
@@ -159,11 +166,12 @@ class Dataset {
   /**
    * Sort the dataset using a user defined function.
    * E.g.
+   * <code>
    * Result::All()
    *     ->Sort(function($r1, $r2){ return $r1->value >= $r2->value })
    *     ->Limit(0, 10)
    *     ->Collect();
-   * 
+   * </code>
    * @param \Closure $func
    * @return \noorm\Dataset
    */
@@ -202,6 +210,18 @@ class Dataset {
     return \count($this->data);
   }
 
+  /**
+   * Combine the elements of the dataset using a reduce operation. E.g.
+   * <code>
+   * House::All()->Reduce(
+   *   function($aggregator, $house){
+   *     return $house->rooms + $aggregator;
+   *   }, 0);
+   * </code>
+   * @param \Closure $func
+   * @param mixed $initial
+   * @return mixed
+   */
   public function Reduce(\Closure $func, $initial = null) {
     return \array_reduce($this->data, $func, $initial);
   }
