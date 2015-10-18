@@ -100,4 +100,4 @@ $client->items->Add($item);
 These are planned improvements:
 - There can be only one many-to-many relation between two classes;
 - You cannot define a many-to-many relation between a class and itself;
-- All() will eagerly load all objects, which memory consuming.
+- All() will eagerly load all objects, which is memory expensive.
