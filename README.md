@@ -1,5 +1,5 @@
 # PHP-Noorm
-[![Build Status](https://travis-ci.org/tdebatty/php-noorm.svg?branch=master)](https://travis-ci.org/tdebatty/php-noorm) [![Latest Stable Version](https://img.shields.io/packagist/v/webd/noorm.svg)](https://packagist.org/packages/webd/noorm) [![API](http://api123.io/api123-head.svg)](http://api123.io/api/PHP-Noorm/head/index.html)
+[![Build Status](https://travis-ci.org/tdebatty/php-noorm.svg?branch=master)](https://travis-ci.org/tdebatty/php-noorm) [![Latest Stable Version](https://img.shields.io/packagist/v/webd/noorm.svg)](https://packagist.org/packages/webd/noorm)
 
 No-ORM storage of PHP object.
 
